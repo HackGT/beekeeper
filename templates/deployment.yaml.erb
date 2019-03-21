@@ -5,6 +5,7 @@ metadata:
   labels:
     name: <%= app['suid'] or app['uid'] %>
     heritage: Beehive
+  namespace: "default"
 spec:
   revisionHistoryLimit: 0
   strategy:

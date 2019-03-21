@@ -5,6 +5,7 @@ metadata:
   labels:
     name: <%= volume[:key] %>
     heritage: Beehive
+  namespace: "default"
 data:
   <% files.each do |_, file| %>
   <%= file[:key] %>: !!str <%= file[:contents].inspect %>

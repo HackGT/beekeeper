@@ -5,6 +5,7 @@ metadata:
     name: <%= app['uid'] %>
     heritage: Biodomes
   name: <%= app['suid'] or app['uid'] %>
+  namespace: "default"
 spec:
   type: NodePort
   ports:
