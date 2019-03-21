@@ -1,0 +1,93 @@
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  namespace: beekeeper
+  name: beekeeper-default
+  labels:
+    name: beekeeper-default
+spec:
+  revisionHistoryLimit: 0
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  replicas: 1
+  template:
+    metadata:
+      name: beekeeper-default
+      labels:
+        name: beekeeper-default
+    spec:
+      containers:
+      - image: hackgt/beekeeper:latest
+        imagePullPolicy: Always
+        resources:
+          limits:
+            memory: 256Mi
+          requests:
+            cpu: 10m
+            memory: 128Mi
+        name: beekeeper-default
+        env:
+        - name: PORT
+          value: '3000'
+        - name: ROOT_URL
+          value: https://beekeeper.hack.gt
+        - name: RAILS_ENV
+          value: production
+        - name: GITHUB_PRIVATE_KEY
+          valueFrom:
+            secretKeyRef:
+              name: beekeeper-secrets
+              key: GITHUB_PRIVATE_KEY
+        - name: GITHUB_APP_IDENTIFIER
+          valueFrom:
+            secretKeyRef:
+              name: beekeeper-secrets
+              key: GITHUB_APP_IDENTIFIER
+        - name: GITHUB_INSTALLATION_ID
+          valueFrom:
+            secretKeyRef:
+              name: beekeeper-secrets
+              key: GITHUB_INSTALLATION_ID
+        - name: GITHUB_WEBHOOK_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: beekeeper-secrets
+              key: GITHUB_WEBHOOK_SECRET
+        - name: CLOUDFLARE_EMAIL
+          valueFrom:
+            secretKeyRef:
+              name: beekeeper-secrets
+              key: CLOUDFLARE_EMAIL
+        - name: CLOUDFLARE_AUTH
+          valueFrom:
+            secretKeyRef:
+              name: beekeeper-secrets
+              key: CLOUDFLARE_AUTH
+        - name: CLOUDFLARE_ZONE
+          valueFrom:
+            secretKeyRef:
+              name: beekeeper-secrets
+              key: CLOUDFLARE_ZONE
+        - name: API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: beekeeper-secrets
+              key: API_KEY  
+        ports:
+        - containerPort: 3000
+          name: node
+        volumeMounts:
+        - name: "config"
+          mountPath: "/root/.netrc"
+          subPath: ".netrc"
+        - name: "config"
+          mountPath: "/root/.kube/config"
+          subPath: "config"
+      volumes:
+        - name: "config"
+          configMap:
+            name: "config"

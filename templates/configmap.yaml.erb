@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: <%= volume[:key] %>
+  labels:
+    name: <%= volume[:key] %>
+    heritage: Beehive
+data:
+  <% files.each do |_, file| %>
+  <%= file[:key] %>: !!str <%= file[:contents].inspect %>
+  <% end %>

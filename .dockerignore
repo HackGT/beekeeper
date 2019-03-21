@@ -1,0 +1,5 @@
+.output/
+.beehive/
+tmp/
+*.pem
+log/

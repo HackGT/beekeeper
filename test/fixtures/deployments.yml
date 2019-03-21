@@ -1,0 +1,11 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  dir_name: MyString
+  app_name: MyString
+  data: 
+
+two:
+  dir_name: MyString
+  app_name: MyString
+  data: 
