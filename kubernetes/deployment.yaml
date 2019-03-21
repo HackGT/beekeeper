@@ -37,6 +37,8 @@ spec:
           value: https://beekeeper.hack.gt
         - name: RAILS_ENV
           value: production
+        - name: RAILS_LOG_TO_STDOUT
+          value: "true"
         - name: GITHUB_PRIVATE_KEY
           valueFrom:
             secretKeyRef:

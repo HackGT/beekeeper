@@ -3,7 +3,7 @@ class Api::VersionUpdatesController < ActionController::Base
     def create
         unless request.headers['Authorization'] == ENV['API_KEY']
             render json: {'message': 'Unauthorized', status: 403}, status: 403
-            puts request.headers['Authorization']
+            logger.info request.headers['Authorization']
             return
         end
         if params.has_key?('repo')

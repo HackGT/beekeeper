@@ -22,11 +22,12 @@ class UpdateDeploymentJob < ApplicationJob
       :environment => "#{app_name}-#{dome_name}", 
       :auto_merge => false,
       :auto_inactive => true,
-      :accept => "application/vnd.github.ant-man-preview+json"
+      :accept => "application/vnd.github.ant-man-preview+json",
+      :transient_environment => true
     })
     @installation_client.create_deployment_status(@deployment['url'], 'in_progress',  {
       :context => "Beekeeper", 
-      :accept => 'application/vnd.github.flash-preview+json'
+      :accept => 'application/vnd.github.flash-preview+json',
     })
     
     # Write out the configuration update

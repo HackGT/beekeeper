@@ -260,7 +260,7 @@ module BeehiveHelper
 
     if dome_name =~ /main\.ya*ml/ && app_name.nil?
       dome_name = 'default'
-      app_name = :main
+      app_name = 'main'
     elsif components.length > 2
       raise "YAML configs cannot go more than 1 directory deep! #{file}"
     elsif app_name.nil?

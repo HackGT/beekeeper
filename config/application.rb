@@ -37,12 +37,14 @@ module MyApi
     # Set concurrency to 1 explicitly
     config.active_job.queue_adapter = ActiveJob::QueueAdapters::AsyncAdapter.new(max_threads: 1)
     
-    # Configure semantic logger    
     # Use the lowest log level to ensure availability of diagnostic information
     # when problems arise.
     config.log_level = :debug
 
-    STDOUT.sync = true
-    config.rails_semantic_logger.add_file_appender = false
+    if ENV["RAILS_LOG_TO_STDOUT"].present?
+      STDOUT.sync = true
+      config.rails_semantic_logger.add_file_appender = false
+      config.semantic_logger.add_appender(io: STDOUT, level: config.log_level, formatter: config.rails_semantic_logger.format)
+    end
   end
 end
