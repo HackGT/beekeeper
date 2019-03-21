@@ -95,7 +95,7 @@ module BeehiveHelper
     text = github_file('deployment.yaml', slog, branch: branch, rev: rev)
     YAML.safe_load(text)
   rescue
-    puts "  - No deployment.yaml found in #{slog}."
+    Rails.logger.debug "  - No deployment.yaml found in #{slog}."
     {}
   end
 
@@ -278,7 +278,7 @@ module BeehiveHelper
     return dome_name, app_name 
   end
   def BeehiveHelper.load_config(global_config, app_config, file, data)
-    puts "[beekeeper] Parsing #{file}."
+    Rails.logger.debug "[beekeeper] Parsing #{file}."
     dome_name, app_name = parse_path(file)
 
     load_app_data(global_config, 
@@ -322,38 +322,38 @@ module BeehiveHelper
 
       if volume[:secret]
         path = File.join KUBE_OUT_DIR, "#{volume[:key]}-secret-files.yaml"
-        puts "[beekeeper] Writing #{path}."
+        Rails.logger.debug "[beekeeper] Writing #{path}."
         write_config(path, SECRET_FILES_TEMPLATE, binding)
       else
         path = File.join KUBE_OUT_DIR, "#{volume[:key]}-configmap.yaml"
-        puts "[beekeeper] Writing #{path}."
+        Rails.logger.debug "[beekeeper] Writing #{path}."
         write_config(path, CONFIG_MAP_TEMPLATE, binding)
       end
     end
 
     path = File.join KUBE_OUT_DIR, "#{app_name}-#{dome_name}-deployment.yaml"
-    puts "[beekeeper] Writing #{path}."
+    Rails.logger.debug "[beekeeper] Writing #{path}."
     write_config(path, DEPLOYMENT_TEMPLATE, binding)
 
     path = File.join KUBE_OUT_DIR, "#{app_name}-#{dome_name}-service.yaml"
-    puts "[beekeeper] Writing #{path}."
+    Rails.logger.debug "[beekeeper] Writing #{path}."
     write_config(path, SERVICE_TEMPLATE, binding)
 
     unless app['secrets'].nil?
       path = File.join KUBE_OUT_DIR, "#{app_name}-#{dome_name}-secrets.yaml"
-      puts "[beekeeper] Writing #{path}."
+      Rails.logger.debug "[beekeeper] Writing #{path}."
       write_config(path, SECRETS_TEMPLATE, binding)
       path = File.join KUBE_OUT_DIR, "git-#{app['git']['slog'].tr '/', '-'}" \
                                     '-secrets.yaml'
     end
     unless File.exist? path
-      puts "[beekeeper] Writing #{path}."
+      Rails.logger.debug "[beekeeper] Writing #{path}."
       write_config(path, FALLBACK_SECRETS_TEMPLATE, binding)
     end
   end
   def BeehiveHelper.write_ingress(beehive)
     path = File.join KUBE_OUT_DIR, 'ingress.yaml'
-    puts "[beekeeper] Writing #{path}."
+    Rails.logger.debug "[beekeeper] Writing #{path}."
     write_config(path, INGRESS_TEMPLATE, binding)
   end
 
@@ -371,12 +371,12 @@ module BeehiveHelper
       zone = connection.zones.find_by_id(ENV['CLOUDFLARE_ZONE'])
       # add the remaining records
       targets.each do |name, record|
-        puts "[beekeeper] Creating Cloudflare DNS: #{record.to_json}"
+        Rails.logger.debug "[beekeeper] Creating Cloudflare DNS: #{record.to_json}"
         record['name'] = name
         begin
           zone.dns_records.create(record["type"], record["name"], record["content"], proxied: record["proxied"])
         rescue
-          puts "[beekeeper] #{record["name"]} already created"
+          Rails.logger.debug "[beekeeper] #{record["name"]} already created"
         end
       end
     end
@@ -388,14 +388,14 @@ module BeehiveHelper
       .each do |(config, path)|
   
       # create based on the kind of file
-      puts "[beekeeper] Deploying #{path}."
+      Rails.logger.debug "[beekeeper] Deploying #{path}."
   
       # We don't want to overwrite over secrets since they are stateful.
       if config['kind'].casecmp('secret').zero?
         `kubectl describe secret '#{config['metadata']['name']}' &>/dev/null`
-        puts `kubectl apply -f '#{path}'` unless $CHILD_STATUS.success?
+        Rails.logger.debug `kubectl apply -f '#{path}'` unless $CHILD_STATUS.success?
       else
-        puts `kubectl apply -f '#{path}'`
+        Rails.logger.debug `kubectl apply -f '#{path}'`
       end
   
       raise 'kubectl exited with non-zero status.' unless $CHILD_STATUS.success?
@@ -403,10 +403,10 @@ module BeehiveHelper
   end
   
   def BeehiveHelper.delete_kubernetes(name)
-    puts "[beekeeper] Deleting deployment #{name}."
-    puts `kubectl delete deployment #{name}`
-    puts "[beekeeper] Deleting service #{name}."
-    puts `kubectl delete service #{name}`
+    Rails.logger.debug "[beekeeper] Deleting deployment #{name}."
+    Rails.logger.debug `kubectl delete deployment #{name}`
+    Rails.logger.debug "[beekeeper] Deleting service #{name}."
+    Rails.logger.debug `kubectl delete service #{name}`
   end
   def BeehiveHelper.delete_dns(host)
     Cloudflare.connect(key: ENV['CLOUDFLARE_AUTH'], email: ENV['CLOUDFLARE_EMAIL']) do |connection|

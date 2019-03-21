@@ -1,7 +1,7 @@
 class UpdateDeploymentJob < ApplicationJob
   queue_as :default
   rescue_from(StandardError) do |exception|
-      puts exception
+      logger.error exception
       @installation_client.create_deployment_status(@deployment["url"], 'failure')
       @installation_client.create_status(payload["repository"]["full_name"], payload["after"], 'failure')
   end

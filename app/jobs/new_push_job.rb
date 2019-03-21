@@ -1,7 +1,7 @@
 class NewPushJob < ApplicationJob
     queue_as :default
     rescue_from(StandardError) do |exception|
-        puts exception
+        logger.error exception
         @installation_client.create_deployment_status(@deployment["url"], 'failure')
         @installation_client.create_status(payload["repository"]["full_name"], payload["after"], 'failure')
     end
@@ -24,7 +24,7 @@ class NewPushJob < ApplicationJob
         @installation_client.create_status(payload["repository"]["full_name"], payload["after"], 'success')
     end
     def perform(payload)
-        puts "Got new head #{payload['after']}"
+        logger.debug "Got new head #{payload['after']}"
         if payload['ref'] == 'refs/heads/master'
             g = BeekeeperLoader::Repo
             current_head = g.revparse('HEAD')
@@ -37,15 +37,15 @@ class NewPushJob < ApplicationJob
                 file_path = Rails.root.join(BEEHIVE_DIRECTORY_NAME, file.path).to_s
                 dome_name, app_name = BeehiveHelper.parse_path(file_path)
                 if file.type == 'deleted'
-                    puts("#{file_path} deleted")
+                    logger.debug("#{file_path} deleted")
                     DeleteDeploymentJob.perform_now(dome_name, app_name, file_path)
                 else
-                    puts("#{file_path} created/modified")
+                    logger.debug("#{file_path} created/modified")
                     UpdateDeploymentJob.perform_now(dome_name, app_name, file_path)
                 end
             end
         else
-            puts "Not deploy for non-master ref #{payload['ref']}"
+            logger.debug "Not deploying for non-master ref #{payload['ref']}"
         end
     end
 end

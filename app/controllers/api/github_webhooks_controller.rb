@@ -7,7 +7,7 @@ class Api::GithubWebhooksController < ActionController::Base
       if payload["repository"]["full_name"] == "HackGT/biodomes"
         NewPushJob.perform_later(payload)
       else
-        puts "Ignoring push for #{payload["repository"]["full_name"]}."
+        logger.info "Ignoring push for #{payload["repository"]["full_name"]}."
       end
     end
     def github_check_suite(payload)

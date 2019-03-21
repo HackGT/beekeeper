@@ -58,6 +58,7 @@ GEM
     async-rest (0.7.3)
       async-http (~> 0.37)
       http-protocol (~> 0.14)
+    awesome_print (1.8.0)
     bootsnap (1.4.1)
       msgpack (~> 1.0)
     builder (3.2.3)
@@ -157,6 +158,9 @@ GEM
       nokogiri (>= 1.6)
     rails-html-sanitizer (1.0.4)
       loofah (~> 2.2, >= 2.2.2)
+    rails_semantic_logger (4.4.0)
+      rails (>= 3.2)
+      semantic_logger (~> 4.4)
     railties (5.2.2.1)
       actionpack (= 5.2.2.1)
       activesupport (= 5.2.2.1)
@@ -178,6 +182,8 @@ GEM
     sawyer (0.8.1)
       addressable (>= 2.3.5, < 2.6)
       faraday (~> 0.8, < 1.0)
+    semantic_logger (4.5.0)
+      concurrent-ruby (~> 1.0)
     sidekiq (5.2.5)
       connection_pool (~> 2.2, >= 2.2.2)
       rack (>= 1.5.0)
@@ -213,6 +219,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  awesome_print
   bootsnap (>= 1.1.0)
   byebug
   cloudflare
@@ -226,6 +233,7 @@ DEPENDENCIES
   octokit (~> 4.0)
   puma (~> 3.11)
   rails (~> 5.2.2, >= 5.2.2.1)
+  rails_semantic_logger
   ruby-filemagic (~> 0.7)
   sidekiq
   spring

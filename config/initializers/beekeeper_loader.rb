@@ -22,13 +22,13 @@ module BeekeeperLoader
       DeploymentMap[repo].delete("#{dome_name}-#{app_name}")
     end
   end
-  puts '[git] Starting load of Beehive'
+  Rails.logger.debug '[git] Starting load of Beehive'
   FileUtils.rm_rf BEEHIVE_DIRECTORY_NAME
   Repo = Git.clone(BEEHIVE_URI, BEEHIVE_DIRECTORY_NAME)
   # Disable renames for diffing
   Repo.config('diff.renames', 'false')
 
-  puts '[git] Clone complete'
+  Rails.logger.debug '[git] Clone complete'
   Beehive = BeehiveHelper.load_config_all(GLOBAL_CONFIG)
   Beehive.each do |dome_name, biodome|
     biodome['apps'].each do |app_name, app|

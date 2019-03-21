@@ -18,6 +18,9 @@ gem 'bootsnap', '>= 1.1.0', require: false
 # GitHub integration for status updates
 gem 'jwt', '~> 2.1'
 gem "octokit", "~> 4.0"
+# Logging 
+gem 'awesome_print'
+gem 'rails_semantic_logger'
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
