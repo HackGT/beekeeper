@@ -1,7 +1,7 @@
 class NewPushJob < ApplicationJob
     queue_as :default
     rescue_from(StandardError) do |exception|
-        logger.error exception
+        logger.error('Failed NewPush', exception)
         @installation_client.create_deployment_status(@deployment["url"], 'failure')
         @installation_client.create_status(payload["repository"]["full_name"], payload["after"], 'failure')
     end

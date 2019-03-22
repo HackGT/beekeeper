@@ -29,6 +29,7 @@ module BeehiveHelper
   SERVICE_TEMPLATE = File.join TEMPLATES_DIR, 'service.yaml.erb'
   DEPLOYMENT_TEMPLATE = File.join TEMPLATES_DIR, 'deployment.yaml.erb'
   INGRESS_TEMPLATE = File.join TEMPLATES_DIR, 'ingress.yaml.erb'
+  CERTIFICATE_TEMPLATE = File.join TEMPLATES_DIR, 'certificate.yaml.erb'
   SECRETS_TEMPLATE = File.join TEMPLATES_DIR, 'secrets.yaml.erb'
   SECRET_FILES_TEMPLATE = File.join TEMPLATES_DIR, 'secret-files.yaml.erb'
   CONFIG_MAP_TEMPLATE = File.join TEMPLATES_DIR, 'configmap.yaml.erb'
@@ -54,7 +55,7 @@ module BeehiveHelper
 
   def BeehiveHelper.make_shortname(config_name, app_name)
     (
-      if config_name && app_name == :main
+      if config_name && app_name == 'main'
         config_name
       else
         app_name
@@ -63,7 +64,7 @@ module BeehiveHelper
   end
 
   def BeehiveHelper.make_host(global_config, app_name, dome_name)
-    if app_name == :main
+    if app_name == 'main'
       global_config['domain']['host']
     elsif dome_name == 'default'
       "#{app_name}.#{global_config['domain']['host']}"
@@ -307,9 +308,7 @@ module BeehiveHelper
     File.open path, 'w' do |file|
       # generate the config
       data = ERB.new(File.read(template)).result(bind)
-      # verify it's real YAML
-      yaml = YAML.safe_load(data)
-      file.write(YAML.dump(yaml))
+      file.write(data)
     end
   end
 
@@ -355,6 +354,9 @@ module BeehiveHelper
     path = File.join KUBE_OUT_DIR, 'ingress.yaml'
     Rails.logger.debug "[beekeeper] Writing #{path}."
     write_config(path, INGRESS_TEMPLATE, binding)
+    path = File.join KUBE_OUT_DIR, 'certificates.yaml'
+    Rails.logger.debug "[beekeeper] Writing #{path}."
+    write_config(path, CERTIFICATE_TEMPLATE, binding)
   end
 
   def BeehiveHelper.gen_dns(global_config, dome_name, app_name, app)
@@ -393,9 +395,9 @@ module BeehiveHelper
       # We don't want to overwrite over secrets since they are stateful.
       if config['kind'].casecmp('secret').zero?
         `kubectl describe secret '#{config['metadata']['name']}' &>/dev/null`
-        Rails.logger.debug `kubectl apply -f '#{path}'` unless $CHILD_STATUS.success?
+        puts `kubectl apply -f '#{path}'` unless $CHILD_STATUS.success?
       else
-        Rails.logger.debug `kubectl apply -f '#{path}'`
+        puts `kubectl apply -f '#{path}'`
       end
   
       raise 'kubectl exited with non-zero status.' unless $CHILD_STATUS.success?

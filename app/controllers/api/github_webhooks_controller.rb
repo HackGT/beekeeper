@@ -4,7 +4,7 @@ class Api::GithubWebhooksController < ActionController::Base
   
     # Handle push event
     def github_push(payload)
-      if payload["repository"]["full_name"] == "HackGT/biodomes"
+      if payload["repository"]["full_name"] == "HackGT/beehive"
         NewPushJob.perform_later(payload)
       else
         logger.info "Ignoring push for #{payload["repository"]["full_name"]}."

@@ -1,0 +1,22 @@
+<% beehive.each do |_, biodome| %>
+    apiVersion: certmanager.k8s.io/v1alpha1
+    kind: Certificate
+    metadata:
+        name: <%= biodome['name'] %>
+        namespace: default
+    spec:
+        secretName:  <%= if biodome['name'] == 'default' then 'prod' else biodome['name'] end %>-tls
+        commonName: '*.<%= if biodome['name'] == 'default' then '' else "#{biodome['name']}." end  %>hack.gt'
+        dnsNames:
+        - '*.<%= if biodome['name'] == 'default' then '' else "#{biodome['name']}." end  %>hack.gt'
+        issuerRef:
+            name: letsencrypt-prod
+            kind: ClusterIssuer
+        acme:
+            config:
+              - dns01:
+                    provider: prod-cloudflare
+                domains:
+                - '*.<%= if biodome['name'] == 'default' then '' else "#{biodome['name']}." end  %>hack.gt'
+---
+<% end %>

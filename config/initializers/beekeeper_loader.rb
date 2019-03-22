@@ -1,5 +1,5 @@
 require "beehive_helper"
-BEEHIVE_URI = 'https://github.com/HackGT/biodomes.git'.freeze
+BEEHIVE_URI = 'https://github.com/HackGT/beehive.git'.freeze
 BEEHIVE_DIRECTORY_NAME = '.beehive'.freeze
 GLOBAL_CONFIG = YAML.load_file(Rails.root.join('config/config.yml'))
 
