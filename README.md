@@ -1,5 +1,5 @@
 # Beekeeper
-HackGT's deployment service.
+HackGT's application deployment service.
 
 ## Introduction and Motivation
 HackGT stores all deployment configuration in [Beehive](https://github.com/HackGT/beehive), a special repository inside our GitHub organization. Each deployment file in Beehive corrseponds to a single deployment of an application running in our Kubernetes cluster. Beekeeper serves as an intermediary between Beehive and Kubernetes. The service is responsible for reading in new application configurations from Beehive and generating appropriate Kubernetes objects that can be fed to the cluster orchestrator.
@@ -16,4 +16,4 @@ This job is responsbile for cleaning up a deployment that is removed. The job re
 This endpoint recieves webhooks when GitHub pushes are made to `HackGT/beehive`. The push is diffed with the previous repository head, and jobs are spanwed for  added/modified (UpdateDeploymentJob) and deleted (DeleteDeploymentJob) application configurations.
 
 ### `/api/version_updates`
-This endpoints recieves hooks from Google Cloud Build whenever a commit is finished building for any HackGT application. The repository that just built is checked against a list of running deployments, and, if any match, a UpdateDeploymentJob is initiated for the deployments matching. For example, if a new commit was pushed to `master` of `HackGT/registration`, any currently deploy instances of `HackGT/registration` that track the `master` branch would be updated to the newest commit.
+This endpoints recieves hooks from Google Cloud Build when a commit is finished building for any HackGT application. The commit a list of running deployments, and, if any are from the same repository, an UpdateDeploymentJob is initiated for the deployments matching. For example, if a new commit was pushed to `master` of `HackGT/registration`, any currently deployed instances of `HackGT/registration` that track the `master` branch would be updated to the new commit.
