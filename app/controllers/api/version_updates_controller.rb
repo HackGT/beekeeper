@@ -9,7 +9,7 @@ class Api::VersionUpdatesController < ActionController::Base
         if params.has_key?('repo')
             apps = BeekeeperLoader::DeploymentMap[params['repo'].downcase]
             if apps.nil?
-                render json: {'message': 'No deployments found', status: 400}, status: 400
+                render json: {'message': 'No deployments found', status: 200}, status: 200
             else
                 apps.each do |app, app_data|
                     UpdateDeploymentJob.perform_later(app_data['domain'], app_data['app'], app_data['config_path'])

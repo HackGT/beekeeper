@@ -30,11 +30,11 @@ class UpdateDeploymentJob < ApplicationJob
           :auto_merge => false,
           :auto_inactive => true,
           :accept => "application/vnd.github.ant-man-preview+json",
-          :transient_environment => true
         })
         @installation_client.create_deployment_status(@deployment['url'], 'in_progress',  {
           :context => "Beekeeper", 
           :accept => 'application/vnd.github.flash-preview+json',
+          :auto_inactive => true
         })
       else
         @deployment_created = false
@@ -55,7 +55,8 @@ class UpdateDeploymentJob < ApplicationJob
       if @deployment_created
         @installation_client.create_deployment_status(@deployment['url'], 'success', {
           :environment_url => "https://#{BeekeeperLoader::Beehive[dome_name]['apps'][app_name]['host']}",
-          :accept => 'application/vnd.github.ant-man-preview+json'
+          :accept => 'application/vnd.github.ant-man-preview+json',
+          :auto_inactive => true
         })
       end
     end
