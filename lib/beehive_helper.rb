@@ -39,6 +39,36 @@ module BeehiveHelper
   POD_FILE_DIR = '/etc/files/'
   INVALID_YAML_KEY = /[^-._a-zA-Z0-9]+/
   INVALID_HOSTNAME = /[^a-zA-Z0-9-]+/
+  GITHUB_PRIVATE_KEY = OpenSSL::PKey::RSA.new(ENV['GITHUB_PRIVATE_KEY'].gsub('\n', "\n"))
+  GITHUB_APP_IDENTIFIER = ENV['GITHUB_APP_IDENTIFIER']
+
+  def BeehiveHelper.authenticate_app()
+      payload = {
+          # The time that this JWT was issued, _i.e._ now.
+          iat: Time.now.to_i,
+
+          # JWT expiration time (10 minute maximum)
+          exp: Time.now.to_i + (10 * 60),
+
+          # Your GitHub App's identifier number
+          iss: GITHUB_APP_IDENTIFIER
+      }
+
+      # Cryptographically sign the JWT.
+      jwt = JWT.encode(payload, GITHUB_PRIVATE_KEY, 'RS256')
+
+      # Create the Octokit client, using the JWT as the auth token.
+      @app_client ||= Octokit::Client.new(bearer_token: jwt)
+    end
+
+  # Instantiate an Octokit client, authenticated as an installation of a
+  # GitHub App, to run API operations.
+  def BeehiveHelper.authenticate_installation()
+      @installation_id = ENV['GITHUB_INSTALLATION_ID']
+      @installation_token = @app_client.create_app_installation_access_token(@installation_id)[:token]
+      @installation_client = Octokit::Client.new(bearer_token: @installation_token, accept:[])
+  end
+
 
   class IncorrectFileConfigurationError < StandardError; end
 
@@ -81,9 +111,9 @@ module BeehiveHelper
   end
 
   def BeehiveHelper.github_file(file, slog, branch: 'master', rev: nil)
-    selector = rev.nil? ? branch : rev
-    url = "https://raw.githubusercontent.com/#{slog}/#{selector}/#{file}"
-    open(url).read
+    BeehiveHelper.authenticate_app()
+    BeehiveHelper.authenticate_installation()
+    Base64.decode64(@installation_client.contents(slog, :path => file, :ref => rev || branch).content)
   end
 
   def BeehiveHelper.safe_github_file(file, slog)
@@ -95,7 +125,7 @@ module BeehiveHelper
   def BeehiveHelper.fetch_deployment(slog, branch: 'master', rev: nil)
     text = github_file('deployment.yaml', slog, branch: branch, rev: rev)
     YAML.safe_load(text)
-  rescue
+  rescue exception
     Rails.logger.debug "  - No deployment.yaml found in #{slog}."
     {}
   end
