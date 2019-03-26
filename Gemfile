@@ -21,6 +21,9 @@ gem "octokit", "~> 4.0"
 # Logging 
 gem 'awesome_print'
 gem 'rails_semantic_logger'
+gem 'exception_notification'
+gem 'slack-notifier'
+
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console

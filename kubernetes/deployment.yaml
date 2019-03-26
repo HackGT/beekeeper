@@ -79,6 +79,11 @@ spec:
             secretKeyRef:
               name: beekeeper-secrets
               key: API_KEY  
+        - name: SLACK_WEBHOOK
+          valueFrom:
+              secretKeyRef:
+                name: beekeeper-secrets
+                key: SLACK_WEBHOOK  
         ports:
         - containerPort: 3000
           name: node

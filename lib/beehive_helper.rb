@@ -125,10 +125,6 @@ module BeehiveHelper
   def BeehiveHelper.fetch_deployment(slog, branch: 'master', rev: nil)
     text = github_file('deployment.yaml', slog, branch: branch, rev: rev)
     YAML.safe_load(text)
-  rescue => exception
-    puts exception.backtrace  
-    Rails.logger.debug "  - No deployment.yaml found in #{slog}."
-    {}
   end
 
   def BeehiveHelper.make_file_opts(opts)

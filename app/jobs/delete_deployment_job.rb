@@ -2,6 +2,7 @@ class DeleteDeploymentJob < ApplicationJob
   queue_as :default
   rescue_from(StandardError) do |exception|
     logger.error('Failed DeleteDeployment', exception)
+    ExceptionNotifier.notify_exception(exception, data: {dome_name: arguments[0], app_name: arguments[1]})
   end
   def perform(dome_name, app_name, config_path)
     logger.tagged(deployment: "#{app_name}-#{dome_name}") do

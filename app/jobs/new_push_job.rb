@@ -4,6 +4,7 @@ class NewPushJob < ApplicationJob
         logger.error('Failed NewPush', exception)
         @installation_client.create_deployment_status(@deployment["url"], 'failure')
         @installation_client.create_status(payload["repository"]["full_name"], payload["after"], 'failure')
+        ExceptionNotifier.notify_exception(exception)
     end
     before_perform do |job|
         authenticate_app()
