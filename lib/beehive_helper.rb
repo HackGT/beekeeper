@@ -418,12 +418,12 @@ module BeehiveHelper
       Rails.logger.debug "[beekeeper] Deploying #{path}."
   
       # We don't want to overwrite over secrets since they are stateful.
-      # if config['kind'].casecmp('secret').zero?
-      #   `kubectl describe secret '#{config['metadata']['name']}' &>/dev/null`
-      #   puts `kubectl apply -f '#{path}'` unless $CHILD_STATUS.success?
-      # else
-      #   puts `kubectl apply -f '#{path}'`
-      # end
+      if config['kind'].casecmp('secret').zero?
+        `kubectl describe secret '#{config['metadata']['name']}' &>/dev/null`
+        puts `kubectl apply -f '#{path}'` unless $CHILD_STATUS.success?
+      else
+        puts `kubectl apply -f '#{path}'`
+      end
   
       raise 'kubectl exited with non-zero status.' unless $CHILD_STATUS.success?
     end
