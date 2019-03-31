@@ -48,7 +48,7 @@ module BeehiveHelper
           iat: Time.now.to_i,
 
           # JWT expiration time (10 minute maximum)
-          exp: Time.now.to_i + (10 * 60),
+          exp: Time.now.to_i + (8 * 60),
 
           # Your GitHub App's identifier number
           iss: GITHUB_APP_IDENTIFIER
@@ -252,9 +252,7 @@ module BeehiveHelper
       suid = nil
     end
     base_config = fetch_deployment(slog, branch: branch, rev: git_rev)
-
-    app_config = app_config.deep_merge(base_config)
-
+    app_config = app_config.deeper_merge(base_config, {:overwrite_arrays => true})
     docker_tag = make_dockertag git, branch: branch, rev: git_rev
 
     host = make_host global_config, app_name, dome_name
@@ -420,12 +418,12 @@ module BeehiveHelper
       Rails.logger.debug "[beekeeper] Deploying #{path}."
   
       # We don't want to overwrite over secrets since they are stateful.
-      if config['kind'].casecmp('secret').zero?
-        `kubectl describe secret '#{config['metadata']['name']}' &>/dev/null`
-        puts `kubectl apply -f '#{path}'` unless $CHILD_STATUS.success?
-      else
-        puts `kubectl apply -f '#{path}'`
-      end
+      # if config['kind'].casecmp('secret').zero?
+      #   `kubectl describe secret '#{config['metadata']['name']}' &>/dev/null`
+      #   puts `kubectl apply -f '#{path}'` unless $CHILD_STATUS.success?
+      # else
+      #   puts `kubectl apply -f '#{path}'`
+      # end
   
       raise 'kubectl exited with non-zero status.' unless $CHILD_STATUS.success?
     end
