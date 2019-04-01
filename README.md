@@ -9,7 +9,7 @@ HackGT stores all deployment configuration in [Beehive](https://github.com/HackG
 This job is responsible for creating or updating a single deployment. This involves templating out Kubernetes configurations, wiring DNS via Cloudflare's API, and reporting status via the GitHub deployment API.
 
 ### DeleteDeploymentJob
-This job is responsbile for cleaning up a deployment that is removed. The job removes the corresponding Kubernetes `Deployment` and `Service` objects and removes the DNS entry for the deployment.
+This job is responsble for cleaning up a deployment that is removed. The job removes the corresponding Kubernetes `Deployment` and `Service` objects and removes the DNS entry for the deployment.
 
 ## Endpoints
 ### `/api/github_webhooks`
