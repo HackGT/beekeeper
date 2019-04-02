@@ -48,7 +48,7 @@ module BeehiveHelper
           iat: Time.now.to_i,
 
           # JWT expiration time (10 minute maximum)
-          exp: Time.now.to_i + (8 * 60),
+          exp: Time.now.to_i + (9 * 60),
 
           # Your GitHub App's identifier number
           iss: GITHUB_APP_IDENTIFIER
@@ -58,7 +58,7 @@ module BeehiveHelper
       jwt = JWT.encode(payload, GITHUB_PRIVATE_KEY, 'RS256')
 
       # Create the Octokit client, using the JWT as the auth token.
-      @app_client ||= Octokit::Client.new(bearer_token: jwt)
+      @app_client = Octokit::Client.new(bearer_token: jwt)
     end
 
   # Instantiate an Octokit client, authenticated as an installation of a
@@ -252,7 +252,7 @@ module BeehiveHelper
       suid = nil
     end
     base_config = fetch_deployment(slog, branch: branch, rev: git_rev)
-    app_config = app_config.deeper_merge(base_config, {:overwrite_arrays => true})
+    app_config = base_config.deep_merge(app_config)
     docker_tag = make_dockertag git, branch: branch, rev: git_rev
 
     host = make_host global_config, app_name, dome_name

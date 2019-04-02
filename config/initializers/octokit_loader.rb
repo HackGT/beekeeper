@@ -6,7 +6,7 @@ def authenticate_app
         iat: Time.now.to_i,
 
         # JWT expiration time (10 minute maximum)
-        exp: Time.now.to_i + (10 * 60),
+        exp: Time.now.to_i + (9 * 60),
 
         # Your GitHub App's identifier number
         iss: GITHUB_APP_IDENTIFIER
@@ -16,7 +16,7 @@ def authenticate_app
     jwt = JWT.encode(payload, GITHUB_PRIVATE_KEY, 'RS256')
 
     # Create the Octokit client, using the JWT as the auth token.
-    @app_client ||= Octokit::Client.new(bearer_token: jwt)
+    @app_client = Octokit::Client.new(bearer_token: jwt)
   end
 
 # Instantiate an Octokit client, authenticated as an installation of a

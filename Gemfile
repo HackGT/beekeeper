@@ -43,7 +43,6 @@ gem 'tzinfo-data'
 
 # Gems for templating logic
 gem 'cloudflare'
-gem "deep_merge", :require => 'deep_merge/rails_compat'
 gem 'kubeclient'
 gem 'ruby-filemagic', '~>0.7'
 gem 'git'
