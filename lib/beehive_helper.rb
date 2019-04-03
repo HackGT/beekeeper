@@ -1,5 +1,4 @@
 module BeehiveHelper
-  require 'deep_merge'
   require 'yaml'
   require 'json'
   require 'erb'
