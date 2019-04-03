@@ -12,6 +12,9 @@ class Api::GithubWebhooksController < ActionController::Base
     end
     def github_check_suite(payload)
     end
+    def github_pull_request(payload)
+      puts 'PRs not implemented yet'
+    end
     private
   
     def webhook_secret(payload)
