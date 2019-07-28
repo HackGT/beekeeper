@@ -15,8 +15,10 @@ class UpdateDeploymentJob < ApplicationJob
       # Reload application data to load updated git reference
       app_config = YAML.safe_load(File.read(config_path))
       old_docker_tag = BeekeeperLoader::Beehive.dig(dome_name, 'apps', app_name, 'docker-tag')
-      # Clear configuration
-      BeekeeperLoader::Beehive[dome_name]['apps'][app_name] = {}
+      # Clear configuration if dome exists
+      if BeekeeperLoader::Beehive.key?(dome_name)
+        BeekeeperLoader::Beehive[dome_name]['apps'][app_name] = {}
+      end
       # Load in new config
       BeehiveHelper.load_config(GLOBAL_CONFIG, app_config, config_path, BeekeeperLoader::Beehive)
       BeekeeperLoader::update_deployment_map(dome_name, app_name, BeekeeperLoader::Beehive[dome_name]['apps'][app_name]["git"]["slog"], BeekeeperLoader::Beehive[dome_name]['apps'][app_name]['config_path'])
