@@ -68,7 +68,6 @@ GEM
     concurrent-ruby (1.1.5)
     connection_pool (2.2.2)
     crass (1.0.4)
-    deep_merge (1.2.1)
     domain_name (0.5.20180417)
       unf (>= 0.0.5, < 1.0.0)
     erubi (1.8.0)
@@ -138,7 +137,7 @@ GEM
       sawyer (~> 0.8.0, >= 0.5.3)
     public_suffix (3.0.3)
     puma (3.12.1)
-    rack (2.0.6)
+    rack (2.0.8)
     rack-protection (2.0.5)
       rack
     rack-test (1.1.0)
@@ -227,7 +226,6 @@ DEPENDENCIES
   bootsnap (>= 1.1.0)
   byebug
   cloudflare
-  deep_merge
   exception_notification
   git
   github_webhook (~> 1.1)
