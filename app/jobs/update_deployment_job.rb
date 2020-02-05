@@ -6,7 +6,7 @@ class UpdateDeploymentJob < ApplicationJob
         @installation_client.create_deployment_status(@deployment["url"], 'failure')
         @installation_client.create_status(payload["repository"]["full_name"], payload["after"], 'failure')
       end
-      ExceptionNotifier.notify_exception(exception, data:  {dome_name: arguments[0], app_name: arguments[1]})
+      ExceptionNotifier.notify_exception(exception, data:  {dome_name: arguments[0], app_name: arguments[1], message: "Error updating deployment. Please check configuration and ensure the branch/commit still exists."})
   end
   def perform(dome_name, app_name, config_path)
     logger.tagged(deployment: "#{app_name}-#{dome_name}") do
@@ -17,7 +17,7 @@ class UpdateDeploymentJob < ApplicationJob
       old_docker_tag = BeekeeperLoader::Beehive.dig(dome_name, 'apps', app_name, 'docker-tag')
       # Clear configuration if dome exists
       if BeekeeperLoader::Beehive.key?(dome_name)
-        BeekeeperLoader::Beehive[dome_name]['apps'][app_name] = {}
+        BeekeeperLoader::Beehive[dome_name]['apps'].delete(app_name)
       end
       # Load in new config
       BeehiveHelper.load_config(GLOBAL_CONFIG, app_config, config_path, BeekeeperLoader::Beehive)

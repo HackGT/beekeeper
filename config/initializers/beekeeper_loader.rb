@@ -3,6 +3,16 @@ BEEHIVE_URI = 'https://github.com/HackGT/beehive.git'.freeze
 BEEHIVE_DIRECTORY_NAME = '.beehive'.freeze
 GLOBAL_CONFIG = YAML.load_file(Rails.root.join('config/config.yml'))
 
+require 'exception_notification/rails'
+
+ExceptionNotification.configure do |config|
+  config.ignored_exceptions += %w{'GithubWebhook::Processor::UnsupportedGithubEventError' NoMethodError} + ExceptionNotifier.ignored_exceptions
+  config.add_notifier :slack, {
+    webhook_url: ENV['SLACK_WEBHOOK'],
+    backtrace_lines: 3
+  }
+end
+
 module BeekeeperLoader
   DeploymentMap = Hash.new
   def BeekeeperLoader.update_deployment_map(dome_name, app_name, repo, config_path)
