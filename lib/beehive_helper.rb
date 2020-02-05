@@ -322,8 +322,12 @@ module BeehiveHelper
       .map    { |f| [YAML.safe_load(File.read(f)), f] }
       .reject { |y| y[0]['ignore'] }
       .each_with_object({}) do |(app_config, file), data|
-
-      load_config(global_config, app_config, file, data)
+      begin
+        load_config(global_config, app_config, file, data)
+      rescue => e
+        ExceptionNotifier.notify_exception(e, data: {message: "Could not load file #{file} on start, please check that it is valid"})
+        puts e
+      end
     end
   end
 
@@ -418,10 +422,10 @@ module BeehiveHelper
   
       # We don't want to overwrite over secrets since they are stateful.
       if config['kind'].casecmp('secret').zero?
-        `kubectl describe secret '#{config['metadata']['name']}' &>/dev/null`
-        puts `kubectl apply -f '#{path}'` unless $CHILD_STATUS.success?
+        `kubectl --namespace=default describe secret '#{config['metadata']['name']}' &>/dev/null`
+        puts `kubectl --namespace=default apply -f '#{path}'` unless $CHILD_STATUS.success?
       else
-        puts `kubectl apply -f '#{path}'`
+        puts `kubectl --namespace=default apply -f '#{path}'`
       end
   
       raise 'kubectl exited with non-zero status.' unless $CHILD_STATUS.success?
@@ -430,9 +434,9 @@ module BeehiveHelper
   
   def BeehiveHelper.delete_kubernetes(name)
     Rails.logger.debug "[beekeeper] Deleting deployment #{name}."
-    Rails.logger.debug `kubectl delete deployment #{name}`
+    Rails.logger.debug `kubectl --namespace=default delete deployment #{name}`
     Rails.logger.debug "[beekeeper] Deleting service #{name}."
-    Rails.logger.debug `kubectl delete service #{name}`
+    Rails.logger.debug `kubectl --namespace=default delete service #{name}`
   end
   def BeehiveHelper.delete_dns(host)
     Cloudflare.connect(key: ENV['CLOUDFLARE_AUTH'], email: ENV['CLOUDFLARE_EMAIL']) do |connection|
