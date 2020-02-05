@@ -19,8 +19,8 @@ This endpoint recieves webhooks when GitHub pushes are made to `HackGT/beehive`.
 This endpoints recieves hooks from Google Cloud Build when a commit is finished building for any HackGT application. The commit a list of running deployments, and, if any are from the same repository, an UpdateDeploymentJob is initiated for the deployments matching. For example, if a new commit was pushed to `master` of `HackGT/registration`, any currently deployed instances of `HackGT/registration` that track the `master` branch would be updated to the new commit.
 
 ## Development
-To develop locally, your computer must be acessible to the internet so you can recieve GitHub webhooks. Setup webhooks [here](https://github.com/HackGT/beehive/settings/hooks) to `https://host/api/github_webhooks/`. I recommend [ngrok](https://ngrok.com).
+To develop locally, your computer must be acessible to the internet so you can recieve GitHub webhooks. Setup webhooks [here](https://github.com/HackGT/beehive/settings/hooks) to `https://<your_host>/api/github_webhooks/`. I recommend [ngrok](https://ngrok.com). You'll need to set all the environment secrets referenced in `kubernetes/deployment.yaml`.
 
-Keep in mind that the production instance may be running already. To stop the production instance run `kubectl --namespace=beehive delete deployment beehive-default`
+Keep in mind that the production instance may be running already. To stop the production instance run `kubectl --namespace=beekeeper delete deployment beekeeper-default`
 ### Deployment
 To deploy, first create the deployment if deleted earlier: `kubectl apply -f kubernetes/deployment.yaml`. Then, `bash deploy.sh` to create the container and update the deployment with the latest code.
