@@ -17,7 +17,7 @@ gem 'bootsnap', '>= 1.1.0', require: false
 
 # GitHub integration for status updates
 gem 'jwt', '~> 2.1'
-gem "octokit", "~> 4.0"
+gem "octokit", "~> 4.18.0"
 # Logging 
 gem 'awesome_print'
 gem 'rails_semantic_logger'
