@@ -7,6 +7,7 @@ RUN apt-get update && apt-get install -y \
   git \
   apt-transport-https \
   curl
+RUN gem install bundler:2.1.4
 RUN curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
 RUN echo "deb https://apt.kubernetes.io/ kubernetes-xenial main" | tee -a /etc/apt/sources.list.d/kubernetes.list
 RUN apt-get update && apt-get install -y --allow-unauthenticated kubectl
@@ -15,7 +16,8 @@ RUN mkdir ~/.kube/
 COPY Gemfile /beekeeper/Gemfile
 COPY Gemfile.lock /beekeeper/Gemfile.lock
 WORKDIR /beekeeper
-RUN bundle install --without development test
+RUN bundle config set without 'development test'
+RUN bundle install
 COPY . /beekeeper
 
 EXPOSE 3000
