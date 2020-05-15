@@ -24,7 +24,7 @@ spec:
         name: beekeeper-default
     spec:
       containers:
-      - image: hackgt/beekeeper:latest
+      - image: hackgt/beekeeper:TAG
         imagePullPolicy: Always
         resources:
           limits:
