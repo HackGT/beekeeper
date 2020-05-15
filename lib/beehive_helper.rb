@@ -103,8 +103,12 @@ module BeehiveHelper
   end
 
   def BeehiveHelper.make_dockertag(remote, branch: 'master', rev: nil)
+    # refs/heads/ gives an exact match, just using the branch name can
+    # return results like:
+    # <hash>	refs/heads/changeset-release/master
+    # <hash>	refs/heads/master
     return rev unless rev.nil?
-    `git ls-remote '#{remote}' '#{branch}'`
+    `git ls-remote '#{remote}' 'refs/heads/#{branch}'`
       .lines[0]
       .split[0]
   end

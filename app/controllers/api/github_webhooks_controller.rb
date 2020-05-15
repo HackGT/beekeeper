@@ -15,6 +15,8 @@ class Api::GithubWebhooksController < ActionController::Base
     def github_pull_request(payload)
       puts 'PRs not implemented yet'
     end
+    def github_integration_installation_repositories(payload)
+    end
     private
   
     def webhook_secret(payload)
