@@ -8,7 +8,6 @@ class NewPushJob < ApplicationJob
     end
     before_perform do |job|
         authenticate_app()
-        authenticate_installation()
         payload = job.arguments.first
         @deployment = @installation_client.create_deployment(payload["repository"]["full_name"], payload["after"], { :required_contexts => [] })
         @installation_client.create_deployment_status(@deployment["url"], 'in_progress', {
@@ -19,7 +18,6 @@ class NewPushJob < ApplicationJob
     end
     after_perform do |job|
         authenticate_app()
-        authenticate_installation()
         payload = job.arguments.first
         @installation_client.create_deployment_status(@deployment["url"], 'success')
         @installation_client.create_status(payload["repository"]["full_name"], payload["after"], 'success')

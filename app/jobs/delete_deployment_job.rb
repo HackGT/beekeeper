@@ -7,7 +7,6 @@ class DeleteDeploymentJob < ApplicationJob
   def perform(dome_name, app_name, config_path)
     logger.tagged(deployment: "#{app_name}-#{dome_name}") do
       authenticate_app()
-      authenticate_installation()
       @deployment = @installation_client.create_deployment(BeekeeperLoader::Beehive[dome_name]['apps'][app_name]['git']['slog'],  BeekeeperLoader::Beehive[dome_name]['apps'][app_name]['docker-tag'], { 
         :required_contexts => [], 
         :environment => "#{app_name}-#{dome_name}", 

@@ -23,7 +23,6 @@ class UpdateDeploymentJob < ApplicationJob
       BeehiveHelper.load_config(GLOBAL_CONFIG, app_config, config_path, BeekeeperLoader::Beehive)
       BeekeeperLoader::update_deployment_map(dome_name, app_name, BeekeeperLoader::Beehive[dome_name]['apps'][app_name]["git"]["slog"], BeekeeperLoader::Beehive[dome_name]['apps'][app_name]['config_path'])
       authenticate_app()
-      authenticate_installation()
       # Only tell GitHub if we're on a new ref for this deployment so we don't spam deployments uncessarily
       if old_docker_tag != BeekeeperLoader::Beehive[dome_name]['apps'][app_name]['docker-tag']
         @deployment_created = true
