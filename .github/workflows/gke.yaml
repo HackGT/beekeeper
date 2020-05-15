@@ -43,6 +43,7 @@ jobs:
             chmod u+x ./kustomize
         - name: Deploy
           run: |-
+            cd kubernetes
             ./kustomize edit set image hackgt/beekeeper:TAG=hackgt/beekeeper:$GITHUB_SHA
             ./kustomize build kubernetes/ | kubectl apply -f -
             kubectl --namespace=beekeeper rollout status deployment/beekeeper-default

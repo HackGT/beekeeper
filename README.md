@@ -23,4 +23,4 @@ To develop locally, your computer must be acessible to the internet so you can r
 
 Keep in mind that the production instance may be running already. To stop the production instance run `kubectl --namespace=beekeeper delete deployment beekeeper-default`
 ### Deployment
-To deploy, first create the deployment if deleted earlier: `kubectl apply -f kubernetes/deployment.yaml`. Then, `bash deploy.sh` to create the container and update the deployment with the latest code.
+To deploy, push to master and wait for the GitHub actions job to complete
