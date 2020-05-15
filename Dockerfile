@@ -19,6 +19,7 @@ WORKDIR /beekeeper
 RUN bundle config set without 'development test'
 RUN bundle install
 COPY . /beekeeper
+RUN rm -r .git
 
 EXPOSE 3000
 CMD ["rails", "server", "-b", "0.0.0.0", "-e", "production"]
