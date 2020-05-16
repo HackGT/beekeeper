@@ -40,33 +40,34 @@ module BeehiveHelper
   INVALID_HOSTNAME = /[^a-zA-Z0-9-]+/
   GITHUB_PRIVATE_KEY = OpenSSL::PKey::RSA.new(ENV['GITHUB_PRIVATE_KEY'].gsub('\n', "\n"))
   GITHUB_APP_IDENTIFIER = ENV['GITHUB_APP_IDENTIFIER']
+  GITHUB_INSTALLATION_ID = ENV['GITHUB_INSTALLATION_ID']
+  stack = Faraday::RackBuilder.new do |builder|
+    builder.use Faraday::Request::Retry, exceptions: [Octokit::ServerError, Octokit::Unauthorized]
+  end
+  Octokit.middleware = stack
 
   def BeehiveHelper.authenticate_app()
-      # Refresh install token every 10 minutes
-      if !defined?(@last_use) || @last_use + (10*60) < Time.now.to_i
-        puts '[beekeeper] Renewing GitHub token'
-        @new_expiry = Time.now.to_i + (9 * 60)
+    # Refresh token within 10 minutes of expiry
+    if !defined?(@expiry) || @expiry.to_i < Time.now.to_i + + 10*60
         payload = {
             # The time that this JWT was issued, _i.e._ now.
             iat: Time.now.to_i,
-  
             # JWT expiration time (10 minute maximum)
             exp: Time.now.to_i + (9 * 60),
-  
             # Your GitHub App's identifier number
             iss: GITHUB_APP_IDENTIFIER
         }
-  
+
         # Cryptographically sign the JWT.
         jwt = JWT.encode(payload, GITHUB_PRIVATE_KEY, 'RS256')
-  
+
         # Create the Octokit client, using the JWT as the auth token.
         @app_client = Octokit::Client.new(bearer_token: jwt)
-        @installation_id = ENV['GITHUB_INSTALLATION_ID']
-        @installation_token = @app_client.create_app_installation_access_token(@installation_id, accept: Octokit::Preview::PREVIEW_TYPES[:integrations])[:token]
-        @installation_client = Octokit::Client.new(bearer_token: @installation_token, accept:[])
-        @last_use = Time.now.to_i
-      end
+        resp = @app_client.create_app_installation_access_token(GITHUB_INSTALLATION_ID, accept: Octokit::Preview::PREVIEW_TYPES[:integrations])
+        @installation_client = Octokit::Client.new(bearer_token: resp.token)
+        @expiry = resp.expires_at
+        puts '[beekeeper-lib] Renewed GitHub token with expiry %i' % [@expiry]
+    end
   end
 
 
