@@ -4,4 +4,5 @@ Rails.application.routes.draw do
     resources :version_updates, only: [:create], defaults: { formats: :json }
   end
   match '*any', to: 'errors#not_found', via: [:get, :post]
+  root to:'errors#not_found'
 end
