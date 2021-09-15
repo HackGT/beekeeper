@@ -1,5 +1,5 @@
 <% beehive.each do |_, biodome| %>
-    apiVersion: certmanager.k8s.io/v1alpha1
+    apiVersion: cert-manager.io/v1
     kind: Certificate
     metadata:
         name: '<%= biodome['name'] %>'
@@ -12,11 +12,5 @@
         issuerRef:
             name: letsencrypt-prod
             kind: ClusterIssuer
-        acme:
-            config:
-              - dns01:
-                    provider: prod-cloudflare
-                domains:
-                - '*.<%= if biodome['name'] == 'default' then '' else "#{biodome['name']}." end  %>hack.gt'
 ---
 <% end %>
