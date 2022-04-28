@@ -105,7 +105,7 @@ GEM
       ffi (>= 1.0.0)
       rake
     fiber-local (1.0.0)
-    git (1.9.1)
+    git (1.11.0)
       rchardet (~> 1.8)
     github_webhook (1.2.0)
       activesupport (>= 4)
